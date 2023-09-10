@@ -8,6 +8,7 @@ const userSchema = new Schema({
   email: {
     type: String,
     required: [true, 'Please provide email'],
+    unique: true, // technically, this isn't a validator..this is just checking for the index
   },
   password: {
     type: String,
