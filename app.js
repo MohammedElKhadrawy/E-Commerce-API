@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 require('express-async-errors');
 require('dotenv').config();
 
+const authRoutes = require('./routes/authRoutes');
+
 const notFound = require('./middleware/not-found');
 const errorHandler = require('./middleware/error-handler');
 
@@ -15,6 +17,8 @@ app.use(express.json());
 app.get('/', (req, res, next) => {
   res.send('<h1>E-Commerce API</h1>');
 });
+
+app.use('/api/v1/auth', authRoutes);
 
 app.use(notFound); // catch-all route
 app.use(errorHandler); // all errors will be forwarded to this middleware
