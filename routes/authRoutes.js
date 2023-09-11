@@ -36,7 +36,14 @@ router.post(
   authController.register
 );
 
-router.post('/login', authController.login);
+router.post(
+  '/login',
+  [
+    body('email', 'E-mail must not be empty').trim().notEmpty(),
+    body('password', 'Password must not be empty').trim().notEmpty(),
+  ],
+  authController.login
+);
 
 router.get('/logout', authController.logout);
 

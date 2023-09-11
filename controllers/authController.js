@@ -1,15 +1,13 @@
-const { validationResult } = require('express-validator');
-
 const User = require('../models/User');
-const { attachCookiesToResponse } = require('../utils');
+const {
+  collectValidationResult,
+  attachCookiesToResponse,
+} = require('../utils');
 const throwCustomError = require('../errors/custom-error');
 
 exports.register = async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const extractedErrors = errors.array().map((err) => err.msg);
-    throwCustomError('Validation Failed', 422, extractedErrors);
-  }
+  collectValidationResult(req);
+
   // This way we ONLY give the admin role to the very first created account
   // We can then change that manually from the database
   // this way we protect the "role" property even if it has been maliciously manipulated by the front-end
@@ -19,13 +17,25 @@ exports.register = async (req, res, next) => {
 
   const user = await User.create(userData);
   const tokenUser = { name: user.name, userId: user._id, role: user.role };
-  
+
   attachCookiesToResponse({ res, tokenUser });
   res.status(201).json({ user: tokenUser });
 };
 
 exports.login = async (req, res, next) => {
-  res.send('login user');
+  collectValidationResult(req);
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    throwCustomError('Could not find a user with this E-mail', 401);
+  }
+  const isPasswordCorrect = await user.checkPassword(password); // don't forget to 'await'!
+  if (!isPasswordCorrect) {
+    throwCustomError('Wrong password!', 401);
+  }
+  const tokenUser = { name: user.name, userId: user._id, role: user.role };
+  attachCookiesToResponse({ res, tokenUser });
+  res.status(200).json({ user: tokenUser });
 };
 
 exports.logout = async (req, res, next) => {
