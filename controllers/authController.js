@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
 
 const User = require('../models/User');
-const { createJWT } = require('../utils');
+const { attachCookiesToResponse } = require('../utils');
 const throwCustomError = require('../errors/custom-error');
 
 exports.register = async (req, res, next) => {
@@ -19,17 +19,8 @@ exports.register = async (req, res, next) => {
 
   const user = await User.create(userData);
   const tokenUser = { name: user.name, userId: user._id, role: user.role };
-  const token = createJWT({ payload: tokenUser });
   
-  // another approach to store the token in a cookie,
-  // that is only accessible for the browser,
-  // and is automatically sent back with every incoming request
-  const oneDay = 24 * 60 * 60 * 1000;
-  res.cookie('token', token, {
-    httpOnly: true,
-    expires: new Date(Date.now() + oneDay),
-  });
-
+  attachCookiesToResponse({ res, tokenUser });
   res.status(201).json({ user: tokenUser });
 };
 

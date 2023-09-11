@@ -14,7 +14,10 @@ const app = express();
 
 app.use(morgan('dev')); // request logger middleware
 app.use(express.json());
-app.use(cookieParser());
+// in addition to using 'signed' option for the token-cookie
+// if a secret was provided to cookieParser, it will unsign and validate any signed cookie values
+// and then move them from req.cookies to req.signedCookies
+app.use(cookieParser(process.env.JWT_SECRET));
 
 app.get('/', (req, res, next) => {
   res.send('<h1>E-Commerce API</h1>');
@@ -22,7 +25,8 @@ app.get('/', (req, res, next) => {
 
 // testing route for cookie access
 app.get('/api/v1', (req, res, next) => {
-  console.log(req.cookies);
+  // console.log(req.cookies);
+  console.log(req.signedCookies);
   res.send('<h1>E-Commerce API</h1>');
 });
 
