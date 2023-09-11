@@ -1,7 +1,8 @@
 const { validationResult } = require('express-validator');
-const throwCustomError = require('../errors/custom-error');
 
 const User = require('../models/User');
+const { createJWT } = require('../utils');
+const throwCustomError = require('../errors/custom-error');
 
 exports.register = async (req, res, next) => {
   const errors = validationResult(req);
@@ -15,8 +16,12 @@ exports.register = async (req, res, next) => {
   const isFirstAccount = (await User.countDocuments()) === 0;
   const role = isFirstAccount ? 'admin' : 'user';
   const userData = { ...req.body, role };
+
   const user = await User.create(userData);
-  res.status(201).json({ user });
+  const tokenUser = { name: user.name, userId: user._id, role: user.role };
+  const token = createJWT({ payload: tokenUser });
+
+  res.status(201).json({ user: tokenUser, token });
 };
 
 exports.login = async (req, res, next) => {
