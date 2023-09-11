@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 require('express-async-errors');
 require('dotenv').config();
 
@@ -13,8 +14,15 @@ const app = express();
 
 app.use(morgan('dev')); // request logger middleware
 app.use(express.json());
+app.use(cookieParser());
 
 app.get('/', (req, res, next) => {
+  res.send('<h1>E-Commerce API</h1>');
+});
+
+// testing route for cookie access
+app.get('/api/v1', (req, res, next) => {
+  console.log(req.cookies);
   res.send('<h1>E-Commerce API</h1>');
 });
 
