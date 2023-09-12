@@ -1,15 +1,17 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-// we use object destructuring so we don't have to care about the order of the arguments passed (if there were more than one)
-const createJWT = ({ payload }) => {
+const createJWT = (payload) => {
   return jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_LIFESPAN,
   });
 };
 
+exports.verifyToken = (token) => jwt.verify(token, process.env.JWT_SECRET);
+
+// we use object destructuring so we don't have to care about the order of the arguments passed (if there were more than one)
 exports.attachCookiesToResponse = ({ res, tokenUser }) => {
-  const token = createJWT({ payload: tokenUser });
+  const token = createJWT(tokenUser);
   // another approach to store the token in a cookie,
   // that is only accessible for the browser,
   // and is automatically sent back with every incoming request
@@ -24,4 +26,3 @@ exports.attachCookiesToResponse = ({ res, tokenUser }) => {
   });
 };
 
-exports.verifyToken = ({ token }) => jwt.verify(token, process.env.JWT_SECRET);
