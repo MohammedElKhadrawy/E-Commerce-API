@@ -11,12 +11,15 @@ exports.validateNameAndEmail = () => {
       .normalizeEmail()
       .custom(async (value, { req }) => {
         const user = await User.findOne({ email: value });
-        // this condition is important for updateUser logic
-        // in case the user doesn't wanna update his email, and the old one is sent back by default
-        // so the user is logged in => req.user is available and we're working on his data
-        // and naturally the query will find the user with the old email
-        if (user && !req.user) {
-            throw new Error('A user with this E-mail already exists');
+        if (user) {
+          // this condition is important for updateUser logic
+          // in case the user doesn't wanna update his email, and the old one is sent back by default
+          // so the user is logged in => req.user is available and we're working on his data
+          // and naturally the query will find the user with the old email
+          if (req.user && user._id.equals(req.user.userId)) {
+            return true;
+          }
+          throw new Error('A user with this E-mail already exists');
         }
       }),
     body('name')
