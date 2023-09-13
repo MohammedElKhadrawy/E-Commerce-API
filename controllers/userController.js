@@ -1,6 +1,10 @@
 const User = require('../models/User');
 const throwCustomError = require('../errors/custom-error');
-const { collectValidationResult } = require('../utils');
+const {
+  collectValidationResult,
+  createTokenUser,
+  attachCookiesToResponse,
+} = require('../utils');
 
 exports.getAllUsers = async (req, res, next) => {
   const users = await User.find({ role: 'user' }).select('-password');
@@ -21,7 +25,22 @@ exports.showCurrentUser = async (req, res, next) => {
 };
 
 exports.updateUser = async (req, res, next) => {
-  res.send('update user');
+  collectValidationResult(req);
+  const {
+    body: { name, email },
+    user: { userId },
+  } = req;
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { name, email },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  const tokenUser = createTokenUser(user);
+  attachCookiesToResponse({ res, tokenUser });
+  res.status(200).json({ user: tokenUser });
 };
 
 exports.updateUserPassword = async (req, res, next) => {
