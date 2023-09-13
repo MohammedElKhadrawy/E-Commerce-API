@@ -2,6 +2,7 @@ const User = require('../models/User');
 const {
   collectValidationResult,
   attachCookiesToResponse,
+  createTokenUser,
 } = require('../utils');
 const throwCustomError = require('../errors/custom-error');
 
@@ -16,7 +17,7 @@ exports.register = async (req, res, next) => {
   const userData = { ...req.body, role };
 
   const user = await User.create(userData);
-  const tokenUser = { name: user.name, userId: user._id, role: user.role };
+  const tokenUser = createTokenUser(user);
 
   attachCookiesToResponse({ res, tokenUser });
   res.status(201).json({ user: tokenUser });
@@ -33,7 +34,7 @@ exports.login = async (req, res, next) => {
   if (!isPasswordCorrect) {
     throwCustomError('Wrong password!', 401);
   }
-  const tokenUser = { name: user.name, userId: user._id, role: user.role };
+  const tokenUser = createTokenUser(user);
   attachCookiesToResponse({ res, tokenUser });
   res.status(200).json({ user: tokenUser });
 };
