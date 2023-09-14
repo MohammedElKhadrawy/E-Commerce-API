@@ -3,13 +3,19 @@ const express = require('express');
 const productController = require('../controllers/ProductController');
 const isAuth = require('../middleware/authentication');
 const authorizeRoles = require('../middleware/authorization');
+const { validateProductData } = require('../utils');
 
 const router = express.Router();
 
 router
   .route('/')
   .get(productController.getAllProducts)
-  .post(isAuth, authorizeRoles('admin'), productController.createProduct);
+  .post(
+    isAuth,
+    authorizeRoles('admin'),
+    validateProductData(),
+    productController.createProduct
+  );
 
 router.post(
   '/uploadImage',

@@ -1,6 +1,7 @@
 const { attachCookiesToResponse, verifyToken } = require('./jwt');
 const collectValidationResult = require('./collectValidationResult');
 const createTokenUser = require('./createTokenUser');
+const validateProductData = require('./validateProductData');
 const {
   validateNameAndEmail,
   validatePassword,
@@ -13,4 +14,5 @@ module.exports = {
   createTokenUser,
   validateNameAndEmail,
   validatePassword,
+  validateProductData,
 };
