@@ -27,7 +27,7 @@ exports.validateNameAndEmail = () => {
       .isLength({ min: 3, max: 50 })
       .withMessage('please provide a name of length 3-50')
       .isAlphanumeric()
-      .withMessage('name must only consist of letters and numbers'),
+      .withMessage('name must consist of only letters and numbers'),
   ];
 };
 

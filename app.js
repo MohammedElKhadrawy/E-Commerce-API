@@ -7,7 +7,8 @@ require('dotenv').config();
 
 // routers
 const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes')
+const userRoutes = require('./routes/userRoutes');
+const productRoutes = require('./routes/productRoutes');
 
 // 404 and error handler middlewares
 const notFound = require('./middleware/not-found');
@@ -35,6 +36,7 @@ app.get('/api/v1', (req, res, next) => {
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/products', productRoutes);
 
 app.use(notFound); // catch-all route
 app.use(errorHandler); // all errors will be forwarded to this middleware

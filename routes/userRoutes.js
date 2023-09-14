@@ -3,17 +3,12 @@ const { body } = require('express-validator');
 
 const userController = require('../controllers/userController');
 const isAuth = require('../middleware/authentication');
-const authorizePermissions = require('../middleware/authorization');
+const authorizeRoles = require('../middleware/authorization');
 const { validateNameAndEmail, validatePassword } = require('../utils');
 
 const router = express.Router();
 
-router.get(
-  '/',
-  isAuth,
-  authorizePermissions('admin'),
-  userController.getAllUsers
-);
+router.get('/', isAuth, authorizeRoles('admin'), userController.getAllUsers);
 
 router.get('/showMe', isAuth, userController.showCurrentUser);
 
