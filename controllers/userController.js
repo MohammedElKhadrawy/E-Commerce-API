@@ -13,6 +13,14 @@ exports.getAllUsers = async (req, res, next) => {
 
 exports.getSingleUser = async (req, res, next) => {
   const { userId } = req.params;
+
+  // checking for permission before querying the db enhances performance for sure!
+  // we also don't need to cast userId.toString() as we would do with user._id, that's a plus! :)
+  // nor use user._id.equals() for that matter! they're both strings! ;)
+  if (req.user.role !== 'admin' && req.user.userId !== userId) {
+    throwCustomError('Unauthorized to access this route', 403);
+  }
+
   const user = await User.findById(userId).select('-password');
   if (!user) {
     throwCustomError(`Could not find a user with ID: ${userId}`, 404);
