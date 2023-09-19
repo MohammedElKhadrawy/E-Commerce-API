@@ -1,7 +1,10 @@
+const path = require('path');
+
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
+const fileUpload = require('express-fileupload');
 require('express-async-errors');
 require('dotenv').config();
 
@@ -22,6 +25,8 @@ app.use(express.json());
 // if a secret was provided to cookieParser, it will unsign and validate any signed cookie values
 // and then move them from req.cookies to req.signedCookies
 app.use(cookieParser(process.env.JWT_SECRET));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(fileUpload());
 
 app.get('/', (req, res, next) => {
   res.send('<h1>E-Commerce API</h1>');

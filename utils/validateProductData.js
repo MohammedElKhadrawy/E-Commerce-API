@@ -10,35 +10,31 @@ const { body } = require('express-validator');
 
 module.exports = () => {
   return [
-    body('name', 'name must be between 3-100 characters')
+    body('name', 'name must be a string between 3-100 characters')
       .isString()
       .trim()
       .isLength({ min: 3, max: 100 }),
-    body('price')
+    body('price', 'price must be a valid number')
       .notEmpty()
-      .withMessage('price cannot be empty')
-      .isNumeric()
-      .withMessage('price must be a number'),
-    body('description', 'description must be between 1-1000 characters')
+      .isFloat({ min: 0 }),
+    body(
+      'description',
+      'description must be a string between 1-1000 characters'
+    )
       .isString()
       .trim()
       .notEmpty()
       .isLength({ max: 1000 }),
-    body('category')
+    body('category', 'category must be a valid string')
       .isString()
-      .withMessage('category must be a string')
       .trim()
-      .notEmpty()
-      .withMessage('category cannot be empty'),
-    body('company')
+      .notEmpty(),
+    body('company', 'company must be a valid string')
       .isString()
-      .withMessage('company must be a string')
       .trim()
-      .notEmpty()
-      .withMessage('company cannot be empty'),
-    body('colors')
+      .notEmpty(),
+    body('colors', 'please provide an array of color hex codes Ex: ["#222"]')
       .isArray()
-      .withMessage('please provide an array of color hex codes Ex: ["#222"]')
       .optional(),
     body('inventory').isInt({ min: 0 }).optional(),
     body('avgRating').isFloat({ min: 0, max: 5 }).optional(),
