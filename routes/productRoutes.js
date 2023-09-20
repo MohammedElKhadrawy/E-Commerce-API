@@ -1,6 +1,6 @@
 const express = require('express');
 
-const productController = require('../controllers/ProductController');
+const productController = require('../controllers/productController');
 const isAuth = require('../middleware/authentication');
 const authorizeRoles = require('../middleware/authorization');
 const { validateProductData } = require('../utils');
