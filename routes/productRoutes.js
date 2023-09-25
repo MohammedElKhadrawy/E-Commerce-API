@@ -1,6 +1,7 @@
 const express = require('express');
 
 const productController = require('../controllers/productController');
+const reviewController = require('../controllers/reviewController');
 const isAuth = require('../middleware/authentication');
 const authorizeRoles = require('../middleware/authorization');
 const { validateProductData } = require('../utils');
@@ -31,5 +32,7 @@ router
     productController.updateProduct
   )
   .delete([isAuth, authorizeRoles('admin')], productController.deleteProduct);
+
+router.get('/:productId/reviews', reviewController.getSingleProductReviews);
 
 module.exports = router;
