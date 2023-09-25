@@ -17,7 +17,6 @@ exports.createReview = async (req, res, next) => {
 
 exports.getAllReviews = async (req, res, next) => {
   const reviews = await Review.find().populate('product', 'name company price');
-  // .populate('user', 'name'); // just to know that we can chain populate multiple times, one field at a time
   res.status(200).json({ reviews, count: reviews.length });
 };
 
@@ -65,13 +64,4 @@ exports.deleteReview = async (req, res, next) => {
   }
   await review.deleteOne();
   res.status(200).json({ message: 'Successfully deleted review' });
-};
-
-// Alternative to virtuals
-// This one we can query all we want!
-// We'll use this in the productRoutes!
-exports.getSingleProductReviews = async (req, res, next) => {
-  const { productId } = req.params;
-  const reviews = await Review.find({ product: productId });
-  res.status(200).json({ reviews, count: reviews.length });
 };

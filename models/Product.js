@@ -62,20 +62,7 @@ const productSchema = new Schema(
       required: true,
     },
   },
-  {
-    timestamps: true,
-    // these are essential for the virtual to work!
-    toObject: { virtuals: true },
-    toJSON: { virtuals: true },
-  }
+  { timestamps: true }
 );
-
-productSchema.virtual('reviews', {
-  ref: 'Review',
-  localField: '_id',
-  foreignField: 'product', // watch the letter-case!!
-  justOne: false, // because we want a list!
-  // match: { rating: 5 }, // This is optional because it's hardcoded
-});
 
 module.exports = model('Product', productSchema);

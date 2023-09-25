@@ -25,7 +25,7 @@ exports.createProduct = async (req, res, next) => {
 
 exports.getSingleProduct = async (req, res, next) => {
   const { productId } = req.params;
-  const product = await Product.findById(productId).populate('reviews'); // we're using a virtual field here [not defined in schema]
+  const product = await Product.findById(productId);
   if (!product) {
     throwCustomError(`Could not find a product with ID: ${productId}`, 404);
   }
