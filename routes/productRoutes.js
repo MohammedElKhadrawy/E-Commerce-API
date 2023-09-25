@@ -33,6 +33,7 @@ router
   )
   .delete([isAuth, authorizeRoles('admin')], productController.deleteProduct);
 
+// we're using reviewController [cuz it's where the Review model logic is]
 router.get('/:productId/reviews', reviewController.getSingleProductReviews);
 
 module.exports = router;
