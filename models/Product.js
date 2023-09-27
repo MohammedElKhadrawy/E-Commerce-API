@@ -1,5 +1,7 @@
 const { Schema, model } = require('mongoose');
 
+const Review = require('./Review');
+
 const productSchema = new Schema(
   {
     name: {
@@ -56,6 +58,10 @@ const productSchema = new Schema(
       type: Number,
       default: 0,
     },
+    numOfReviews: {
+      type: Number,
+      default: 0,
+    },
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -77,5 +83,13 @@ productSchema.virtual('reviews', {
   justOne: false, // because we want a list!
   // match: { rating: 5 }, // This is optional because it's hardcoded
 });
+
+// we reach out to Review model and delete reviews associated with the product
+// before it gets deleted so a pre-deleteOne hook
+productSchema.pre('deleteOne', { document: true }, async function () {
+  await Review.deleteMany({ product: this._id });
+});
+// we can't use this approach now that we set document: true, 'this' refers to the document not the schema/model anymore
+// await this.model('Review').deleteMany({ product: this._id });
 
 module.exports = model('Product', productSchema);

@@ -43,6 +43,7 @@ exports.updateReview = async (req, res, next) => {
       403
     );
   }
+  // this approach makes it more flexible, the user only passes the to-be-changed fields!
   for (const prop in req.body) {
     if (prop === 'user' || prop === 'product') continue;
     review[prop] = req.body[prop];
