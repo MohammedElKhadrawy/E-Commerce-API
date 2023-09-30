@@ -1,6 +1,6 @@
 const { Schema, model } = require('mongoose');
 
-const singleCartItemSchema = new Schema({
+const singleOrderItemSchema = new Schema({
   name: {
     type: String,
     required: true,
@@ -45,7 +45,7 @@ const orderSchema = new Schema(
       type: Number,
       required: true,
     },
-    cartItems: [singleCartItemSchema],
+    orderItems: [singleOrderItemSchema],
     status: {
       type: String,
       enum: ['pending', 'failed', 'paid', 'delivered', 'canceled'],
