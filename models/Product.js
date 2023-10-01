@@ -54,6 +54,11 @@ const productSchema = new Schema(
       // required: true,
       default: 15,
     },
+    status: {
+      type: String,
+      enum: ['Available', 'Out of Stock'],
+      default: 'Available',
+    },
     avgRating: {
       type: Number,
       default: 0,

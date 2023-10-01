@@ -26,7 +26,11 @@ exports.createOrder = async (req, res, next) => {
   for (const item of cartItems) {
     const dbProduct = await Product.findById(item.product);
     if (!dbProduct) {
-      throwCustomError(`Could not find a product with ID: ${item.product}`);
+      throwCustomError(`Could not find a product with ID: ${item.product}`, 404);
+    }
+
+    if(item.quantity > dbProduct.inventory) {
+      throwCustomError('order quantity cannot exceed available inventory', 400)
     }
 
     const { name, price, image } = dbProduct;

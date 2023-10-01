@@ -67,4 +67,18 @@ const orderSchema = new Schema(
   { timestamps: true }
 );
 
+orderSchema.post('save', async function () {
+  // if (this.isModified('orderItems')) {
+  // this runs only when we update using order.save() [patch request]
+  // }
+  for (const item of this.orderItems) {
+    const orderedProduct = await this.model('Product').findById(item.product);
+    orderedProduct.inventory -= item.quantity;
+    if (orderedProduct.inventory === 0) {
+      orderedProduct.status = 'Out of Stock';
+    }
+    await orderedProduct.save();
+  }
+});
+
 module.exports = model('Order', orderSchema);
