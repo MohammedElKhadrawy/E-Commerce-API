@@ -49,14 +49,19 @@ exports.updateProduct = async (req, res, next) => {
       403
     );
   }
-  updatedProduct = await product.updateOne(body, {
-    new: true,
-    runValidators: true,
-  });
-  // for (const prop in body) {
-  //   product[prop] = body[prop];
-  // }
-  // const updatedProduct = await product.save();
+
+  //// we can ONLY return the updatedProduct using findByIdAndUpdate and findOneAndUpdate!!
+  //// product.updateOne doesn't work as expected!
+  // updatedProduct = await product.updateOne(body, {
+  //   new: true,
+  //   runValidators: true,
+  // });
+
+  for (const prop in body) {
+    if (prop === 'user') continue;
+    product[prop] = body[prop];
+  }
+  const updatedProduct = await product.save();
   res.status(200).json({ updatedProduct });
 };
 

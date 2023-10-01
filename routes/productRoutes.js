@@ -28,7 +28,7 @@ router
   .get(productController.getSingleProduct)
   .patch(
     [isAuth, authorizeRoles('admin')],
-    validateProductData(),
+    validateProductData({ isOptional: true }),
     productController.updateProduct
   )
   .delete([isAuth, authorizeRoles('admin')], productController.deleteProduct);

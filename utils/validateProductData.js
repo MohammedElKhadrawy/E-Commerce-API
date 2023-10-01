@@ -8,8 +8,8 @@ const { body } = require('express-validator');
 // 2nd important note: we HAVE TO trim() before isLength(),
 // cuz if we don't, then isLength() will count the spaces!!
 
-module.exports = () => {
-  return [
+module.exports = ({ isOptional } = {}) => {
+  const middlewares = [
     body('name', 'name must be a string between 3-100 characters')
       .isString()
       .trim()
@@ -33,10 +33,12 @@ module.exports = () => {
       .isString()
       .trim()
       .notEmpty(),
-    body('colors', 'please provide an array of color hex codes Ex: ["#222"]')
-      .isArray()
-      .optional(),
     body('inventory').isInt({ min: 0 }).optional(),
-    body('avgRating').isFloat({ min: 0, max: 5 }).optional(),
   ];
+
+  if (isOptional) {
+    return middlewares.map((middleware) => middleware.optional());
+  } else {
+    return middlewares;
+  }
 };
