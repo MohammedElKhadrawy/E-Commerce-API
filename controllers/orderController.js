@@ -6,8 +6,7 @@ const throwCustomError = require('../errors/custom-error');
 // cuz we don't actually have a front-end yet
 const fakeStripeAPI = async ({ amount, currency }) => {
   const client_secret = 'someRandomValue';
-  const id = 'someUniqueIdentifier';
-  return { id, client_secret, amount };
+  return { client_secret, amount };
 };
 
 exports.createOrder = async (req, res, next) => {
@@ -26,11 +25,14 @@ exports.createOrder = async (req, res, next) => {
   for (const item of cartItems) {
     const dbProduct = await Product.findById(item.product);
     if (!dbProduct) {
-      throwCustomError(`Could not find a product with ID: ${item.product}`, 404);
+      throwCustomError(
+        `Could not find a product with ID: ${item.product}`,
+        404
+      );
     }
 
-    if(item.quantity > dbProduct.inventory) {
-      throwCustomError('order quantity cannot exceed available inventory', 400)
+    if (item.quantity > dbProduct.inventory) {
+      throwCustomError('order quantity cannot exceed available inventory', 400);
     }
 
     const { name, price, image } = dbProduct;
@@ -74,17 +76,45 @@ exports.createOrder = async (req, res, next) => {
 };
 
 exports.getAllOrders = async (req, res, next) => {
-  res.send('get all orders');
+  const orders = await Order.find();
+  res.status(200).json({ orders, count: orders.length });
 };
 
 exports.getCurrentUserOrders = async (req, res, next) => {
-  res.send('get current user orders');
+  const orders = await Order.find({ user: req.user.userId });
+  res.status(200).json({ orders, count: orders.length });
 };
 
 exports.getSingleOrder = async (req, res, next) => {
-  res.send('get single order');
+  const { orderId } = req.params;
+  const order = await Order.findById(orderId);
+  if (!order) {
+    throwCustomError(`Could not find an order with ID: ${orderId}`, 404);
+  }
+  if (!order.user.equals(req.user.userId) && req.user.role !== 'admin') {
+    throwCustomError(
+      'Unauthorized! only the user who created this order or an admin can access it',
+      403
+    );
+  }
+  res.status(200).json({ order });
 };
 
 exports.updateOrder = async (req, res, next) => {
-  res.send('update order');
+  const { orderId } = req.params;
+  const { paymentIntentId } = req.body;
+  const order = await Order.findById(orderId);
+  if (!order) {
+    throwCustomError(`Could not find an order with ID: ${orderId}`, 404);
+  }
+  if (!order.user.equals(req.user.userId) && req.user.role !== 'admin') {
+    throwCustomError(
+      'Unauthorized! only the user who created this order or an admin can update it',
+      403
+    );
+  }
+  order.paymentIntentId = paymentIntentId;
+  order.status = 'paid';
+  await order.save();
+  res.status(200).json({ updatedOrder: order });
 };
